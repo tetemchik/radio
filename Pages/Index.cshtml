@@ -1,0 +1,236 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Home page";
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link href="https://fonts.googleapis.com/css?family=Nunito&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+    <audio id="audiofile" allow="autoplay"></audio>
+    <span class="v537_705">
+        RimRadio
+        </span>
+        <img src="~/img/logo.svg" class="logo">
+        <div class="v537_758" hidden="hidden">
+            <div class="v537_759">
+                <div class="v537_760">
+                    <div class="v537_761">
+
+                    </div>
+                    <div class="v540_707">
+                        <div class="v540_699">
+
+                        </div>
+                        <div class="name">
+
+                        </div>
+                        <span class="v540_700">
+                            Комментировать...
+                            </span>
+                            </div>
+                            <span class="v545_390">
+                                Слушателей сейчас: 1
+                                </span>
+                                </div>
+        </div>
+    </div>
+    <div class="colorBack" style="">
+
+
+
+    </div>
+
+
+    <div class="v537_786">
+        <div class="v537_787">
+            <div class="v537_788">
+                <div class="v537_789">
+                    <div class="v537_791">
+                        <img class="v537_790">
+
+
+
+
+
+                            <div class="v537_792">
+                            </div>
+                    </div>
+                </div>
+                                </div>
+        </div>
+                                </div>
+                                
+                                
+    
+                                
+                                
+                                <div class="v537_816">
+                                    <span class="v537_806">
+                                        0:00
+                                        </span>
+                                        <span class="v537_807">
+                                            0:00
+                                            </span>
+        <progress id="file" max="100" value="0" class="v537_808">
+
+            </progress>
+                                            
+                                            </div>
+                                            <span class="v537_814">
+                                                NaN
+
+                                            </span>
+                                                <span class="v537_815">
+                                                    NaN
+                                                    </span>
+                                                    <img src="~/img/notifications.svg" class="v549_387">
+    
+    @Html.AntiForgeryToken()
+</body>
+</html>
+
+
+ <script>
+   
+
+
+    $.ajax({
+        type: "GET",
+        url: "/?handler=Music",
+        contentType: "application/json",
+        dataType: "json",
+        
+        success: function (response) {
+            var ms = parseInt(response.split("ОЙ")[6])*1000;
+            var mss = parseInt(response.split("ОЙ")[6]);
+            var min = parseInt(mss/60);
+            var sec = parseInt(mss - min * 60);
+            document.getElementsByClassName("colorBack")[0].style = "box-shadow: 0px 0px 230px rgba(" + response.split("ОЙ")[7].split(" ")[1] + ", " + response.split("ОЙ")[7].split(" ")[2] + ", " + response.split("ОЙ")[7].split(" ")[3] + ", 0.4);"
+
+                document.getElementById("audiofile").autoplay = true;
+                document.getElementById("audiofile").volume = 0.5;
+            if (min < 10 && sec < 10) {
+                document.getElementById("audiofile").src = response.split("ОЙ")[1] + "#t=00:0" + min +":" + "0" + sec;
+            }if (min > 10 && sec < 10) {
+                document.getElementById("audiofile").src = response.split("ОЙ")[1] + "#t=00:" + min +":" + "0" + sec;
+            }
+            if (min < 10 && sec >= 10) {
+                document.getElementById("audiofile").src = response.split("ОЙ")[1] + "#t=00:0" + min +":"+ sec;
+            }
+            if (min > 10 && sec >= 10) {
+                document.getElementById("audiofile").src = response.split("ОЙ")[1] + "#t=00:" + min +":"+ sec;
+            }
+            if(sec < 10){
+                document.getElementsByClassName("v537_806")[0].textContent = min + ":0" + sec;
+            }
+            if(sec >= 10){
+                document.getElementsByClassName("v537_806")[0].textContent = min + ":" + sec;
+            }
+
+            document.getElementsByClassName("v537_814")[0].textContent = response.split("ОЙ")[3];
+            document.getElementsByClassName("v537_815")[0].textContent = response.split("ОЙ")[2];
+            document.getElementsByClassName("v537_790")[0].src = response.split("ОЙ")[0];
+            
+            document.getElementsByClassName("v537_807")[0].textContent = response.split("ОЙ")[4];
+
+        },
+        failure: function (response) {
+            alert(response);
+        }
+    });
+    setTimeout(everySec, 1000);
+    function everySec(){
+        var min = parseInt(document.getElementsByClassName("v537_806")[0].textContent.split(":")[0]);
+        var sec = parseInt(document.getElementsByClassName("v537_806")[0].textContent.split(":")[1]);
+        if(sec < 60){
+            if(sec >= 9){
+                sec = sec+=1;
+                document.getElementsByClassName("v537_806")[0].textContent = min + ":" + sec;
+            }
+
+            if (sec < 9) {
+                sec = sec+=1;
+                document.getElementsByClassName("v537_806")[0].textContent = min + ":" +"0"+ sec;
+            }
+            
+            }
+            if(sec == 60){
+                
+                document.getElementsByClassName("v537_806")[0].textContent = min +1 + ":" +"0"+ 0;
+        }
+
+        min = parseInt(document.getElementsByClassName("v537_806")[0].textContent.split(":")[0]);
+        sec = parseInt(document.getElementsByClassName("v537_806")[0].textContent.split(":")[1]);
+
+        var maxMin = parseInt(document.getElementsByClassName("v537_807")[0].textContent.split(":")[0]);
+        var maxSec = parseInt(document.getElementsByClassName("v537_807")[0].textContent.split(":")[1]);
+
+        var maxTimeSec = maxMin*60 + maxSec;
+        var TimeSec = min*60+sec;
+
+        document.getElementById("file").value = TimeSec / maxTimeSec *100;
+        if(TimeSec+1 >= maxTimeSec){
+            getAjax();
+        }
+        setTimeout(everySec, 1000);
+        }
+        
+
+    function getAjax(){
+                document.getElementsByClassName("v537_806")[0].textContent = "0:00";
+        $.ajax({
+            type: "GET",
+            url: "/?handler=Music",
+            contentType: "application/json",
+            dataType: "json",
+
+            success: function (response) {
+                var ms = parseInt(response.split("ОЙ")[6]) * 1000;
+                var mss = parseInt(response.split("ОЙ")[6]);
+                var min = parseInt(mss / 60);
+                var sec = parseInt(mss - min * 60);
+            document.getElementsByClassName("colorBack")[0].style = "box-shadow: 0px 0px 230px rgba(" + response.split("ОЙ")[7].split(" ")[2] + ", " + response.split("ОЙ")[7].split(" ")[3] + ", " + response.split("ОЙ")[7].split(" ")[4] + ", 0.4);"
+
+                document.getElementById("audiofile").autoplay = true;
+                document.getElementById("audiofile").volume = 0.5;
+                if (min < 10 && sec < 10) {
+                    document.getElementById("audiofile").src = response.split("ОЙ")[1] + "#t=00:0" + min + ":" + "0" + sec;
+                } if (min > 10 && sec < 10) {
+                    document.getElementById("audiofile").src = response.split("ОЙ")[1] + "#t=00:" + min + ":" + "0" + sec;
+                }
+                if (min < 10 && sec >= 10) {
+                    document.getElementById("audiofile").src = response.split("ОЙ")[1] + "#t=00:0" + min + ":" + sec;
+                }
+                if (min > 10 && sec >= 10) {
+                    document.getElementById("audiofile").src = response.split("ОЙ")[1] + "#t=00:" + min + ":" + sec;
+                }
+                if (sec < 10) {
+                    document.getElementsByClassName("v537_806")[0].textContent = min + ":0" + sec;
+                }
+                if (sec >= 10) {
+                    document.getElementsByClassName("v537_806")[0].textContent = min + ":" + sec;
+                }
+
+                document.getElementsByClassName("v537_814")[0].textContent = response.split("ОЙ")[3];
+                document.getElementsByClassName("v537_815")[0].textContent = response.split("ОЙ")[2];
+                document.getElementsByClassName("v537_790")[0].src = response.split("ОЙ")[0];
+
+                document.getElementsByClassName("v537_807")[0].textContent = response.split("ОЙ")[4];
+
+            },
+            failure: function (response) {
+                alert(response);
+            }
+        });
+    }
+
+
+ </script>
